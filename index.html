@@ -1,0 +1,3695 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pusat Penjaminan Mutu Unsulbar - POS</title>
+    
+    <!-- EMBEDDED CSS -->
+    <style>
+        /* Reset dan Font Dasar */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Header Utama */
+        .header-main {
+            display: flex;
+            align-items: center;
+            background-color: #004a9c; /* Biru Unsulbar */
+            color: white;
+            padding: 15px 30px;
+            border-bottom: 5px solid #fdd100; /* Kuning Unsulbar */
+        }
+
+        .header-main .logo {
+            height: 70px;
+            width: auto;
+            margin-right: 20px;
+        }
+
+        .header-main h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .header-main h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        /* Kontainer Utama (Sidebar + Konten) */
+        .container {
+            display: flex;
+            min-height: calc(100vh - 105px); /* Tinggi layar dikurangi header */
+        }
+
+        /* Tombol Toggle Menu (untuk mobile) */
+        #menu-toggle {
+            display: none; /* Sembunyi di desktop */
+            position: fixed;
+            top: 25px;
+            right: 20px;
+            z-index: 1001;
+            background: #fdd100;
+            color: #004a9c;
+            border: none;
+            padding: 10px 12px;
+            border-radius: 5px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Sidebar Navigasi */
+        .sidebar {
+            width: 320px;
+            background: #ffffff;
+            border-right: 1px solid #ddd;
+            padding: 20px;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar h3 {
+            margin-top: 0;
+            font-size: 1.1rem;
+            color: #004a9c;
+            border-bottom: 2px solid #f4f4f4;
+            padding-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar li a {
+            display: block;
+            padding: 12px 15px;
+            text-decoration: none;
+            color: #444;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .sidebar li a:hover {
+            background-color: #f0f4f8;
+            color: #004a9c;
+        }
+
+        .sidebar li a.active {
+            background-color: #004a9c;
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Area Konten Utama */
+        .content {
+            flex: 1; /* Mengisi sisa ruang */
+            padding: 30px;
+            overflow-y: auto;
+            background-color: #f4f7f6;
+        }
+
+        /* Dokumen POS */
+        .pos-document {
+            display: none; /* Sembunyikan semua POS secara default */
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+
+        /* Tampilkan POS yang aktif */
+        .pos-document.active {
+            display: block;
+        }
+
+        .pos-header {
+            background: #f7f7f7;
+            padding: 20px 30px;
+            border-bottom: 1px solid #ddd;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .pos-header h3 {
+            margin: 0;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pos-header h2 {
+            margin: 5px 0 0 0;
+            font-size: 1.7rem;
+            color: #004a9c;
+        }
+
+        .pos-approval {
+            background: #f0f7ff;
+            padding: 15px 30px;
+            border-bottom: 1px solid #ddd;
+            font-size: 0.95rem;
+        }
+
+        /* Grid untuk Metadata */
+        .pos-metadata {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsif */
+            gap: 20px;
+            padding: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .meta-item {
+            font-size: 0.9rem;
+        }
+
+        .meta-item h4 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            color: #333;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 5px;
+        }
+
+        .meta-item ul {
+            padding-left: 20px;
+            margin: 0;
+            color: #555;
+        }
+
+        /* Tabel Prosedur */
+        .pos-procedure {
+            padding: 30px;
+            overflow-x: auto; /* Agar tabel bisa di-scroll di layar kecil */
+        }
+
+        .pos-procedure h4 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: #004a9c;
+        }
+
+        .pos-procedure table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .pos-procedure th, 
+        .pos-procedure td {
+            border: 1px solid #ddd;
+            padding: 10px 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .pos-procedure thead {
+            background-color: #f5f5f5;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .pos-procedure tbody tr:nth-child(even) {
+            background-color: #fcfcfc;
+        }
+
+        /* Responsive (Mobile) */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            #menu-toggle {
+                display: block;
+            }
+
+            .header-main {
+                padding: 15px;
+            }
+
+            .header-main .logo {
+                height: 50px;
+            }
+            .header-main h1 {
+                font-size: 1.2rem;
+            }
+            .header-main h2 {
+                font-size: 0.9rem;
+            }
+
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 300px;
+                transform: translateX(-100%);
+                box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+                padding-top: 80px; /* Ruang untuk header */
+            }
+
+            body.sidebar-open .sidebar {
+                transform: translateX(0);
+            }
+
+            .content {
+                width: 100%;
+                padding: 20px 10px;
+            }
+
+            .pos-header, .pos-approval, .pos-metadata, .pos-procedure {
+                padding: 15px;
+            }
+
+            .pos-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .pos-metadata {
+                grid-template-columns: 1fr; /* Stack di mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-main">
+        <!-- Ganti 'logo.png' dengan path/URL logo Unsulbar yang valid -->
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Logo_Universitas_Sulawesi_Barat.png/240px-Logo_Universitas_Sulawesi_Barat.png" alt="Logo Unsulbar" class="logo" onerror="this.style.display='none'">
+        <div class="header-title">
+            <h1>UNIVERSITAS SULAWESI BARAT</h1>
+            <h2>PUSAT PENJAMINAN MUTU (PPM)</h2>
+        </div>
+    </header>
+
+    <button id="menu-toggle">&#9776;</button>
+
+    <div class="container">
+        <nav class="sidebar" id="pos-nav">
+            <h3>Daftar Prosedur (POS)</h3>
+            <ul>
+                <!-- Navigasi. 'data-target' harus sesuai dengan 'id' <article> -->
+                <li><a href="#" class="active" data-target="pos-1">Penyusunan Kalender Akademik</a></li>
+                <li><a href="#" data-target="pos-2">Pengisian Kartu Rencana Studi</a></li>
+                <li><a href="#" data-target="pos-3">Penerimaan Maba (SNBP)</a></li>
+                <li><a href="#" data-target="pos-4">Penyusunan Jadwal Kuliah</a></li>
+                <li><a href="#" data-target="pos-5">Penginputan Nilai Siakad</a></li>
+                <li><a href="#" data-target="pos-6">Penerbitan Kartu Hasil Studi</a></li>
+                <li><a href="#" data-target="pos-7">Pembimbingan & Pelaksanaan TA</a></li>
+                <li><a href="#" data-target="pos-8">Penerbitan & Legalisasi Ijazah</a></li>
+                <li><a href="#" data-target="pos-9">Monev Pembelajaran (4 & 14 Sem)</a></li>
+                <li><a href="#" data-target="pos-10">Penerimaan Maba (SNBT)</a></li>
+                <li><a href="#" data-target="pos-11">Penerimaan Maba (Mandiri)</a></li>
+                <li><a href="#" data-target="pos-12">Registrasi Mahasiswa Baru</a></li>
+                <li><a href="#" data-target="pos-13">Monev Kegiatan Kemahasiswaan</a></li>
+                <li><a href="#" data-target="pos-14">Seleksi Proposal Kegiatan Ekskul</a></li>
+                <li><a href="#" data-target="pos-15">Seleksi Proposal (PKM, PPK, P2MW)</a></li>
+                <li><a href="#" data-target="pos-16">Penentuan Penerima Beasiswa</a></li>
+                <li><a href="#" data-target="pos-17">Pencairan Beasiswa Mahasiswa</a></li>
+            </ul>
+        </nav>
+
+        <main class="content" id="pos-content">
+            
+            <!-- ================================================================== -->
+            <!-- POS 1: Penyusunan Kalender Akademik -->
+            <!-- ================================================================== -->
+            <article class="pos-document active" id="pos-1">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>PENYUSUNAN KALENDER AKADEMIK</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr. Muhammad Abdy, S.Si., M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>Permendikbudristek No. 53 Tahun 2023</li>
+                            <li>Permendikbudristek No. 9 Tahun 2004</li>
+                            <li>Peraturan Akademik Universitas Sulawesi Barat</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Rektor</li>
+                            <li>Senat</li>
+                            <li>Wakil Rektor I</li>
+                            <li>Kepala Biro Akademik dan Kemahasiswaan</li>
+                            <li>Bagian Akademik</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS Pengisian KRS</li>
+                            <li>POS Penyusunan Jadwal Kuliah</li>
+                            <li>POS Penginputan Nilai Siakad</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Kalender Akademik Tahun Sebelumnya</li>
+                            <li>Peraturan Akademik Unsulbar</li>
+                            <li>SKB 3 Menteri tentang Cuti Bersama</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Keterlambatan penetapan kalender akademik akan menggeser seluruh jadwal layanan akademik (KRS, Kuliah, Ujian, Nilai).</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>Notula Rapat Senat</li>
+                            <li>Kalender Akademik</li>
+                            <li>SK Kalender Akademik</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>POS PENYUSUNAN KALENDER AKADEMIK</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="5">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Bag. Akademik</th>
+                                <th>Ka. Biro AK</th>
+                                <th>WR I</th>
+                                <th>Senat</th>
+                                <th>Rektor</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Bagian Akademik menyiapkan bahan penyusunan Kalender Akademik</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Bahan penyusunan</td>
+                                <td>5 hari</td>
+                                <td>Bahan siap</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Menyusun draf Kalender Akademik</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Bahan penyusunan</td>
+                                <td>5 hari</td>
+                                <td>Draf Kalender</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Membahas dan mengkaji ulang draf Kalender Akademik</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Draf Kalender</td>
+                                <td>1 hari</td>
+                                <td>Draf final</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Menyerahkan draf Kalender Akademik ke Senat (atas pengantar Rektor)</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td>Draf final</td>
+                                <td>1 hari</td>
+                                <td>Draf terkirim</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Rektor dan Senat membahas draf Kalender Akademik</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td>Draf final</td>
+                                <td>1 hari</td>
+                                <td>Hasil pembahasan</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Mencetak SK Kalender Akademik sesuai hasil pembahasan Senat</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Notula Rapat</td>
+                                <td>1 hari</td>
+                                <td>Draf SK</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>7.</td>
+                                <td>Menyerahkan SK Kalender Akademik ke Rektor untuk ditanda-tangani</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Draf SK</td>
+                                <td>1 hari</td>
+                                <td>SK (ttd Rektor)</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>8.</td>
+                                <td>Senat mengesahkan SK Kalender Akademik</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>SK (ttd Rektor)</td>
+                                <td>1 hari</td>
+                                <td>SK disahkan</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>9.</td>
+                                <td>Bagian Akademik menerima SK Kalender Akademik</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>SK Kalender</td>
+                                <td>1 hari</td>
+                                <td>SK diterima</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10.</td>
+                                <td>Menggandakan SK untuk didistribusikan ke fakultas</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>SK Kalender</td>
+                                <td>xx hari</td>
+                                <td>SK terdistribusi</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <!-- ================================================================== -->
+            <!-- POS 2: Pengisian Kartu Rencana Studi -->
+            <!-- ================================================================== -->
+            <article class="pos-document" id="pos-2">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>PENGISIAN KARTU RENCANA STUDI</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr. Muhammad Abdy, S.Si., M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>Permendikbudristek No. 53 Tahun 2023</li>
+                            <li>Permendikbudristek No. 9 Tahun 2004</li>
+                            <li>Peraturan Akademik Universitas Sulawesi Barat</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Wakil Rektor I</li>
+                            <li>Kepala Biro Akademik dan Kemahasiswaan</li>
+                            <li>Bagian Akademik</li>
+                            <li>Fakultas</li>
+                            <li>Koordinator Program Studi (Kaprodi)</li>
+                            <li>Dosen Penasehat Akademik (PA)</li>
+                            <li>Mahasiswa</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS Penyusunan Kalender Akademik</li>
+                            <li>POS Penyusunan Jadwal Kuliah</li>
+                            <li>POS Penerbitan Kartu Hasil Studi</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Bukti lunas UKT via VA</li>
+                            <li>Sistem Informasi Akademik (Siakad)</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Mahasiswa tidak terdaftar secara sah pada semester berjalan.</li>
+                            <li>Proses perkuliahan dan pelaporan PDDikti terhambat.</li>
+                            <li>Mahasiswa berpotensi kehilangan hak studinya.</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>KRS mahasiswa</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>POS PENGISIAN KARTU RENCANA STUDI</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="4">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Mhs</th>
+                                <th>Admin Siakad</th>
+                                <th>Dosen PA</th>
+                                <th>Fakultas</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Mahasiswa melunasi UKT melalui VA sesuai jadwal</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Bukti lunas UKT</td>
+                                <td>14 hari</td>
+                                <td>Pembayaran tervalidasi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Sinkronisasi data bank dan Siakad (Menu KRS terbuka)</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Data Bank, Siakad</td>
+                                <td>1 hari</td>
+                                <td>Menu KRS terbuka</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Mahasiswa memilih mata kuliah sesuai SKS (berdasarkan IP)</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Daftar MK</td>
+                                <td>10 hari</td>
+                                <td>Draf Usulan KRS</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Dosen PA memeriksa usulan KRS Mahasiswa</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Draf Usulan KRS</td>
+                                <td>3 hari</td>
+                                <td>Status Persetujuan</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Jika tidak disetujui, mahasiswa memilih ulang MK (arahan PA)</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Arahan PA</td>
+                                <td></td>
+                                <td>Draf Usulan KRS (Revisi)</td>
+                                <td>Kembali ke No. 4</td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Jika disetujui, KRS dicetak oleh mahasiswa</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>KRS (disetujui)</td>
+                                <td>1 hari</td>
+                                <td>Cetak KRS</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>7.</td>
+                                <td>KRS (ttd PA & Kaprodi) dikumpulkan di fakultas</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Cetak KRS (ttd)</td>
+                                <td>3 hari</td>
+                                <td>Arsip KRS Fakultas</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <!-- ================================================================== -->
+            <!-- POS 3: Penerimaan Maba (SNBP) -->
+            <!-- ================================================================== -->
+            <article class="pos-document" id="pos-3">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>PENERIMAAN MAHASISWA BARU JALUR SNBP</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr. Muhammad Abdy, M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>UU No. 12 Tahun 2012</li>
+                            <li>PP No. 4 Tahun 2014</li>
+                            <li>Perpres No. 36 Tahun 2013</li>
+                            <li>Permendikbudristek No. 9 Tahun 2024</li>
+                            <li>Permenristekdikti No. 80 Tahun 2017</li>
+                            <li>Permendikbud No. 6 Tahun 2020</li>
+                            <li>Peraturan Akademik Unsulbar</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Staf Akademik dan kemahasiswaan</li>
+                            <li>Calon Mahasiswa Baru</li>
+                            <li>Sekolah</li>
+                            <li>Panitia Pusat SNPMB</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS PMB Jalur SNBT</li>
+                            <li>POS PMB Jalur Mandiri</li>
+                            <li>POS Registrasi Mahasiswa Baru</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Sistem SNPMB</li>
+                            <li>Data PDSS (Pangkalan Data Sekolah dan Siswa)</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Kegagalan prosedur dapat menyebabkan calon mahasiswa tidak terdaftar dalam seleksi nasional.</li>
+                            <li>Data pemeringkatan siswa (PDSS) oleh sekolah tidak terekam.</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>Kartu Peserta SNBP</li>
+                            <li>Data/Daftar Peserta Lulus SNBP</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>POS PENERIMAAN MAHASISWA BARU JALUR SNBP</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="3">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Calon Maba</th>
+                                <th>Sekolah</th>
+                                <th>Panitia SNPMB</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Calon mahasiswa baru membuat akun SNPMB</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Akun SNPMB</td>
+                                <td>5 menit</td>
+                                <td>Akun aktif</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Sekolah mengisi data PDSS</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Data PDSS</td>
+                                <td>10 menit</td>
+                                <td>Data PDSS terisi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Siswa (lolos pemeringkatan) memilih program studi dan universitas</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Akun SNPMB</td>
+                                <td>10 menit</td>
+                                <td>Prodi/PT Pilihan</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Siswa mencetak kartu peserta SNBP</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Akun SNPMB</td>
+                                <td>90 menit</td>
+                                <td>Kartu Peserta SNBP</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Seleksi dilakukan oleh Panitia Pusat SNPMB</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Data Pendaftar</td>
+                                <td>7 hari</td>
+                                <td>Hasil Seleksi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Pengumuman SNBP</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Hasil Seleksi</td>
+                                <td>5 menit</td>
+                                <td>Pengumuman Kelulusan</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <!-- ================================================================== -->
+            <!-- POS 4: Penyusunan Jadwal Kuliah -->
+            <!-- ================================================================== -->
+            <article class="pos-document" id="pos-4">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>PENYUSUNAN JADWAL KULIAH</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr. Muhammad Abdy, S.Si., M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>Permendikbudristek No. 53 Tahun 2023</li>
+                            <li>Permendikbudristek No. 9 Tahun 2004</li>
+                            <li>Peraturan Akademik Universitas Sulawesi Barat</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Fakultas</li>
+                            <li>Koordinator Program Studi (Kaprodi)</li>
+                            <li>Admin Siakad Fakultas</li>
+                            <li>Dosen</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS Penyusunan Kalender Akademik</li>
+                            <li>POS Pengisian Kartu Rencana Studi</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Sistem Informasi Akademik (Siakad)</li>
+                            <li>Daftar Mata Kuliah per semester</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Jadwal kuliah tidak terbit tepat waktu.</li>
+                            <li>Proses pengisian KRS mahasiswa akan terhambat.</li>
+                            <li>Potensi terjadinya bentrok jadwal dosen atau ruangan.</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>SK Penugasan Dosen</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>POS PENYUSUNAN JADWAL KULIAH</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="4">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Kaprodi</th>
+                                <th>Dosen</th>
+                                <th>Fakultas</th>
+                                <th>Admin Siakad Fak.</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Kaprodi membuat daftar mata kuliah sesuai semester berjalan</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Daftar Kurikulum/MK</td>
+                                <td>3 hari</td>
+                                <td>Daftar MK Semester</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Kaprodi dan dosen merapatkan penyusunan pengampuh MK</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Daftar MK</td>
+                                <td>1 hari</td>
+                                <td>Daftar Pengampuh MK</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Kaprodi menyusun jadwal berdasarkan hasil rapat</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Hasil Rapat</td>
+                                <td>5 hari</td>
+                                <td>Draf Jadwal Kuliah</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Fakultas menerbitkan SK Penugasan Dosen</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Draf Jadwal</td>
+                                <td>1 hari</td>
+                                <td>SK Penugasan Dosen</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Admin Siakad Fakultas menginput jadwal ke Siakad</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>SK Penugasan Dosen</td>
+                                <td>1 hari</td>
+                                <td>Jadwal terinput</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Kelas, ruangan, dan dosen tertera di Menu Pengisian KRS</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Siakad</td>
+                                <td></td>
+                                <td>Jadwal siap (KRS)</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <!-- ================================================================== -->
+            <!-- POS 5: Penginputan Nilai Siakad -->
+            <!-- ================================================================== -->
+            <article class="pos-document" id="pos-5">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>PENGINPUTAN NILAI SIAKAD</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr. Muhammad Abdy, S.Si., M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>Permendikbudristek No. 53 Tahun 2023</li>
+                            <li>Permendikbudristek No. 9 Tahun 2004</li>
+                            <li>Peraturan Akademik Universitas Sulawesi Barat</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Wakil Rektor I</li>
+                            <li>Kepala Biro Akademik dan Kemahasiswaan</li>
+                            <li>Bagian Akademik</li>
+                            <li>Fakultas</li>
+                            <li>Dosen Penanggung Jawab MK</li>
+                            <li>Admin Siakad</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS Penyusunan Kalender Akademik</li>
+                            <li>POS Penerbitan Kartu Hasil Studi (KHS)</li>
+                            <li>POS Monitoring Evaluasi Pembelajaran</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Sistem Informasi Akademik (Siakad)</li>
+                            <li>Kalender Akademik</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Keterlambatan input nilai menunda penerbitan KHS.</li>
+                            <li>Nilai 'T' berisiko menghambat KRS semester berikutnya.</li>
+                            <li>Keterlambatan pelaporan nilai ke PDDikti.</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>Daftar Nilai Kelas</li>
+                            <li>Data Status Penginputan Nilai</li>
+                            <li>Berita Acara Fakultas</li>
+                            <li>KHS Mahasiswa</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>POS PENGINPUTAN NILAI SIAKAD</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="4">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Admin Siakad</th>
+                                <th>Dosen PJ MK</th>
+                                <th>Bag. Akademik</th>
+                                <th>Fakultas</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Admin Siakad menginput Kalender Akademik (jadwal input nilai)</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Kalender Akademik</td>
+                                <td>1 hari</td>
+                                <td>Jadwal di Siakad</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Dosen melakukan penginputan nilai sesuai Kalender Akademik</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Siakad</td>
+                                <td>14 hari</td>
+                                <td>Nilai terinput</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Nilai tertera di KHS mahasiswa secara real-time</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Siakad</td>
+                                <td>Real-time</td>
+                                <td>KHS Mahasiswa</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Admin Siakad menarik data Status Penginputan Nilai</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Siakad</td>
+                                <td>1 hari</td>
+                                <td>Data Status Input</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Bag. Akademik menindaklanjuti (membuat daftar dosen belum input)</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Data Status Input</td>
+                                <td>1 hari</td>
+                                <td>Daftar Dosen</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Bag. Akademik berkoordinasi dengan fakultas (jika dosen tidak input)</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td>Daftar Dosen</td>
+                                <td>1 hari</td>
+                                <td>Tindak lanjut Fak.</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>7.</td>
+                                <td>Bag. Akademik memproses nilai (sesuai Per. Akademik & BA Fak.)</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td>Berita Acara Fak.</td>
+                                <td>3 hari</td>
+                                <td>Nilai terproses</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <!-- ================================================================== -->
+            <!-- POS 6: Penerbitan Kartu Hasil Studi -->
+            <!-- ================================================================== -->
+            <article class="pos-document" id="pos-6">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>PENERBITAN KARTU HASIL STUDI</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr. Muhammad Abdy, S.Si., M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>Permendikbudristek No. 53 Tahun 2023</li>
+                            <li>Permendikbudristek No. 9 Tahun 2004</li>
+                            <li>Peraturan Akademik Universitas Sulawesi Barat</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Wakil Rektor I</li>
+                            <li>Kepala Biro Akademik dan Kemahasiswaan</li>
+                            <li>Bagian Akademik</li>
+                            <li>Fakultas</li>
+                            <li>Kaprodi</li>
+                            <li>Dosen PJ MK</li>
+                            <li>Mahasiswa</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS Penginputan Nilai Siakad</li>
+                            <li>POS Pengisian Kartu Rencana Studi</li>
+                            <li>POS Penyusunan Kalender Akademik</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Sistem Informasi Akademik (SIAKAD)</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Mahasiswa tidak memiliki bukti capaian akademik semesteran.</li>
+                            <li>Penanganan nilai 'T' yang tidak sesuai dapat merugikan mhs.</li>
+                            <li>Keterlambatan KHS menghambat pengisian KRS berikutnya.</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>KHS mahasiswa</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>POS PENERBITAN KARTU HASIL STUDI</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="3">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Dosen PJ MK</th>
+                                <th>Mahasiswa</th>
+                                <th>Fakultas</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Dosen PJ MK menginput nilai ke Siakad sesuai jadwal</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Siakad, Kal. Akademik</td>
+                                <td>14 hari</td>
+                                <td>Nilai terinput</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Nilai tertera di Siakad mahasiswa</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Siakad</td>
+                                <td>Real-time</td>
+                                <td>Nilai terlihat</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Cek Nilai: Apakah 'T'?</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Siakad</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Jika nilai 'T' (hingga batas waktu), mhs otomatis dapat nilai E</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Per. Akademik</td>
+                                <td>10+1 hari</td>
+                                <td>Nilai T -> E</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Jika nilai bukan 'T', mahasiswa mencetak KHS via Siakad</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Siakad</td>
+                                <td>1 hari</td>
+                                <td>Cetak KHS</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>KHS (ttd PA & Kaprodi) dikumpulkan di fakultas</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td>KHS (ttd)</td>
+                                <td>1 hari</td>
+                                <td>Arsip KHS</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <!-- ================================================================== -->
+            <!-- POS 7: Pembimbingan & Pelaksanaan TA -->
+            <!-- ================================================================== -->
+            <article class="pos-document" id="pos-7">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>PEMBIMBINGAN DAN PELAKSANAAN TUGAS AKHIR</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr. Muhammad Abdy, S.Si., M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>Permendikbudristek No. 53 Tahun 2023</li>
+                            <li>Permendikbudristek No. 9 Tahun 2004</li>
+                            <li>Peraturan Akademik Universitas Sulawesi Barat</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Fakultas</li>
+                            <li>Dosen Pembimbing</li>
+                            <li>Dosen Penguji</li>
+                            <li>Mahasiswa</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS Penerbitan dan Legalisasi Ijazah</li>
+                            <li>POS Pengisian Kartu Rencana Studi</li>
+                            <li>POS Monitoring Evaluasi Pembelajaran</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Sistem Informasi Akademik (Siakad)</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Proses penyelesaian studi mahasiswa akan terhambat.</li>
+                            <li>Keterlambatan penetapan pembimbing/penguji.</li>
+                            <li>Kegagalan administrasi (input nilai) menunda kelulusan.</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>SK Dosen Pembimbing</li>
+                            <li>SK Dosen Penguji</li>
+                            <li>Berita Acara Yudisium</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>POS PEMBIMBINGAN DAN PELAKSANAAN TUGAS AKHIR</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="4">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Fakultas</th>
+                                <th>Dosen Pembimbing</th>
+                                <th>Mahasiswa</th>
+                                <th>Dosen Penguji</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Fakultas menetapkan dosen pembimbing TA (SK Dekan)</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Daftar Dosen</td>
+                                <td>3 hari</td>
+                                <td>SK Pembimbing</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Mahasiswa melakukan pembimbingan TA</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Draf TA</td>
+                                <td></td>
+                                <td>Log Bimbingan</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Dosen Pembimbing menyetujui TA untuk diseminarkan</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Draf TA (Final)</td>
+                                <td>1 hari</td>
+                                <td>Persetujuan Seminar</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Fakultas menetapkan Dosen Penguji TA (SK Dekan)</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Draf TA (disetujui)</td>
+                                <td>3 hari</td>
+                                <td>SK Penguji</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Seminar Tugas Akhir dilaksanakan</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td>TA, SK Penguji</td>
+                                <td>1 hari</td>
+                                <td>Hasil Seminar</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Fakultas mencetak Berita Acara Yudisium (berdasar hasil seminar)</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Hasil Seminar</td>
+                                <td>1 hari</td>
+                                <td>BA Yudisium</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>7.</td>
+                                <td>Fakultas menginput nilai TA dan mengunggah BA Yudisium ke Siakad</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>BA Yudisium, Siakad</td>
+                                <td>1 hari</td>
+                                <td>Nilai TA di Siakad</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <!-- ================================================================== -->
+            <!-- POS 8: Penerbitan & Legalisasi Ijazah -->
+            <!-- ================================================================== -->
+            <article class="pos-document" id="pos-8">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>PENERBITAN DAN LEGALISASI IJAZAH</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr. Muhammad Abdy, S.Si., M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>Permendikbudristek No. 6 Tahun 2022</li>
+                            <li>Permendikbudristek No. 9 Tahun 2004</li>
+                            <li>Peraturan Akademik Universitas Sulawesi Barat</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Biro Akademik dan Kemahasiswaan</li>
+                            <li>Bagian Akademik</li>
+                            <li>Fakultas</li>
+                            <li>Mahasiswa</li>
+                            <li>Admin Siakad</li>
+                            <li>Rektor</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS Pembimbingan dan Pelaksanaan Tugas Akhir</li>
+                            <li>POS Penginputan Nilai Siakad</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Sistem Informasi Akademik (Siakad)</li>
+                            <li>Blangko Ijazah</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Kesalahan verifikasi data akan mengakibatkan kesalahan cetak Ijazah.</li>
+                            <li>Penundaan tanda tangan pimpinan menunda penyerahan ijazah.</li>
+                            <li>Ketidaklengkapan dokumen mhs menghambat proses.</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>Berita Acara Yudisium</li>
+                            <li>Bebas Pembayaran & Pustaka</li>
+                            <li>Ijazah Terakhir, Lembar Pengesahan TA</li>
+                            <li>Sertifikat</li>
+                            <li>Draf Ijazah, Ijazah, Daftar serah terima</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>POS PENERBITAN DAN LEGALISASI IJAZAH</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="5">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Mhs</th>
+                                <th>Admin Siakad</th>
+                                <th>Bag. Akademik</th>
+                                <th>Fakultas</th>
+                                <th>Rektor</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Mhs mengurus dokumen di fakultas (BA Yudisium, Bebas Pustaka, dll)</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Dokumen terkait</td>
+                                <td>3 hari</td>
+                                <td>Dokumen lengkap</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Mahasiswa mengunggah dokumen penerbitan Ijazah ke Siakad</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Siakad, Dokumen</td>
+                                <td>1 hari</td>
+                                <td>Dok. terunggah</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Admin Siakad memverifikasi berkas penerbitan Ijazah</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Siakad</td>
+                                <td>5 hari</td>
+                                <td>Status Verifikasi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Jika ditolak, mahasiswa memperbaiki data/dokumen</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Siakad</td>
+                                <td></td>
+                                <td>Dok. perbaikan</td>
+                                <td>Kembali ke No. 2</td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Jika disetujui, Bagian Akademik mencetak draf Ijazah</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Siakad (data ok)</td>
+                                <td>1 hari</td>
+                                <td>Draf Ijazah</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Bagian Akademik mendistribusikan draf Ijazah ke fakultas</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Draf Ijazah</td>
+                                <td>1 hari</td>
+                                <td>Draf diterima Fak.</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>7.</td>
+                                <td>Fakultas mengecek kembali draf Ijazah (verifikasi kedua)</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Draf Ijazah</td>
+                                <td>5 hari</td>
+                                <td>Draf terverifikasi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>8.</td>
+                                <td>Fakultas mengembalikan draf Ijazah ke Bagian Akademik</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Draf terverifikasi</td>
+                                <td>1 hari</td>
+                                <td>Draf diterima Bag. Ak.</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>9.</td>
+                                <td>Bagian Akademik mencetak Ijazah (final)</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Blangko, Draf final</td>
+                                <td>1 hari</td>
+                                <td>Ijazah tercetak</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10.</td>
+                                <td>Fakultas mengambil Ijazah di Bagian Akademik</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Ijazah tercetak</td>
+                                <td>1 hari</td>
+                                <td>Ijazah di Fakultas</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>11.</td>
+                                <td>Fakultas memproses tanda tangan pimpinan fakultas (Dekan)</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Ijazah</td>
+                                <td>5 hari</td>
+                                <td>Ijazah (ttd Dekan)</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>12.</td>
+                                <td>Bagian Akademik menerima kembali Ijazah (dari fakultas)</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Ijazah (ttd Dekan)</td>
+                                <td>1 hari</td>
+                                <td>Ijazah diterima Bag. Ak.</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>13.</td>
+                                <td>Bagian Akademik memproses tanda tangan Rektor</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ijazah (ttd Dekan)</td>
+                                <td>5 hari</td>
+                                <td>Ijazah (ttd Rektor)</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>14.</td>
+                                <td>Fakultas mengambil Ijazah (final) di Bag. Ak. (serah terima)</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Ijazah (ttd Rektor)</td>
+                                <td>1 hari</td>
+                                <td>Ijazah di Fakultas</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>15.</td>
+                                <td>Fakultas menyiapkan Ijazah untuk diberikan kepada mahasiswa</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Ijazah</td>
+                                <td>1 hari</td>
+                                <td>Ijazah siap diambil</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>16.</td>
+                                <td>Mahasiswa menerima Ijazah</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Ijazah</td>
+                                <td>1 hari</td>
+                                <td>Ijazah diterima Mhs</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+            
+            <!-- ================================================================== -->
+            <!-- POS 9: Monev Pembelajaran (4 & 14 Sem) -->
+            <!-- ================================================================== -->
+            <article class="pos-document" id="pos-9">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>MONITORING EVALUASI PEMBELAJARAN (4 & 14 SEMESTER)</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr. Muhammad Abdy, S.Si., M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>Permendikbudristek No. 53 Tahun 2023</li>
+                            <li>Permendikbudristek No. 9 Tahun 2004</li>
+                            <li>Peraturan Akademik Universitas Sulawesi Barat</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Rektor</li>
+                            <li>Senat</li>
+                            <li>Wakil Rektor I</li>
+                            <li>Kepala Biro Akademik dan Kemahasiswaan (BAK)</li>
+                            <li>Bagian Akademik</li>
+                            <li>Fakultas</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS Penerbitan Kartu Hasil Studi (KHS)</li>
+                            <li>POS Pembimbingan dan Pelaksanaan Tugas Akhir</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Sistem Informasi Akademik (Siakad)</li>
+                            <li>Data Aktivitas Kuliah Mahasiswa (AKM)</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Gagal memantau mhs yang tidak memenuhi standar (4 sem) atau melebihi batas studi (14 sem).</li>
+                            <li>Keterlambatan penerbitan SK DO.</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>Data AKM Mahasiswa</li>
+                            <li>Daftar mahasiswa status evaluasi</li>
+                            <li>Usulan DO dari Fakultas</li>
+                            <li>SK DO</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>POS MONITORING EVALUASI PEMBELAJARAN (4 DAN 14 SEMESTER)</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="6">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Fakultas</th>
+                                <th>Mhs</th>
+                                <th>WR I</th>
+                                <th>Ka. BAK</th>
+                                <th>Bag. Akademik</th>
+                                <th>Rektor & Senat</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Fakultas menyeleksi perkembangan akademik mhs (data AKM Siakad)</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Data AKM Siakad</td>
+                                <td>5 hari</td>
+                                <td>Data Mhs Status Evaluasi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Fakultas memanggil mahasiswa dengan status evaluasi</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Surat Panggilan</td>
+                                <td>30 hari</td>
+                                <td>Hasil Evaluasi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Fakultas membuat daftar mahasiswa yang diajukan DO</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Hasil Evaluasi</td>
+                                <td>3 hari</td>
+                                <td>Daftar Usulan DO</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Fakultas mengirimkan data Usulan DO ke Wakil Rektor I</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Usulan DO</td>
+                                <td>1 hari</td>
+                                <td>Usulan diterima WR I</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>WR I dan Ka. BAK menerima dan disposisi usulan DO</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Usulan DO</td>
+                                <td>1 hari</td>
+                                <td>Disposisi proses</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Bagian Akademik memverifikasi data mahasiswa di Siakad</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Disposisi, Siakad</td>
+                                <td>3 hari</td>
+                                <td>Data terverifikasi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>7.</td>
+                                <td>Bagian Akademik mengajukan SK DO ke Rektor dan Senat</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td>Data terverifikasi</td>
+                                <td>1 hari</td>
+                                <td>Ajuan SK DO</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>8.</td>
+                                <td>Rektor dan Senat membahas dan menyetujui penerbitan SK DO</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ajuan SK DO</td>
+                                <td>1 hari</td>
+                                <td>SK DO</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <!-- ================================================================== -->
+            <!-- POS 10: Penerimaan Maba (SNBT) -->
+            <!-- ================================================================== -->
+            <article class="pos-document" id="pos-10">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>PENERIMAAN MAHASISWA BARU JALUR SNBT</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr. Muhammad Abdy, M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>UU No. 12 Tahun 2012</li>
+                            <li>PP No. 4 Tahun 2014</li>
+                            <li>Perpres No. 36 Tahun 2013</li>
+                            <li>Permendikbudristek No. 9 Tahun 2024</li>
+                            <li>Permenristekdikti No. 80 Tahun 2017</li>
+                            <li>Permendikbud No. 6 Tahun 2020</li>
+                            <li>Peraturan Akademik Unsulbar</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Staf Akademik dan kemahasiswaan</li>
+                            <li>Calon Mahasiswa Baru</li>
+                            <li>Panitia Pusat UTBK-SNBT</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS PMB Jalur SNBP</li>
+                            <li>POS PMB Jalur Mandiri</li>
+                            <li>POS Registrasi Mahasiswa Baru</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Sistem SNPMB</li>
+                            <li>Sistem Ujian Tulis Berbasis Komputer (UTBK)</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Kegagalan pembayaran membatalkan kepesertaan.</li>
+                            <li>Kesalahan data/pilih pusat UTBK menghambat seleksi.</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>Bukti Pembayaran</li>
+                            <li>Kartu Peserta SNBT</li>
+                            <li>Data/Daftar Peserta Lulus SNBT</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>POS PENERIMAAN MAHASISWA BARU JALUR SNBT</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="2">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Calon Maba</th>
+                                <th>Panitia UTBK-SNBT</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Calon mahasiswa baru membuat akun SNPMB</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Akun SNPMB</td>
+                                <td>5 menit</td>
+                                <td>Akun aktif</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Melakukan pembayaran</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Bukti Bayar</td>
+                                <td>10 menit</td>
+                                <td>Pembayaran terverifikasi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Siswa melengkapi data, memilih prodi, dan menentukan pusat UTBK</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Akun SNPMB</td>
+                                <td>10 Menit</td>
+                                <td>Data terisi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Siswa mencetak kartu peserta SNBT</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Akun SNPMB</td>
+                                <td>10 Menit</td>
+                                <td>Kartu Peserta SNBT</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Seleksi (Pelaksanaan Ujian) oleh Panitia Pusat UTBK-SNBT</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Kartu Peserta</td>
+                                <td>90 menit</td>
+                                <td>Hasil Seleksi/Ujian</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Pengumuman SNBT</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Hasil Seleksi</td>
+                                <td>14 hari</td>
+                                <td>Pengumuman Kelulusan</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <!-- ================================================================== -->
+            <!-- POS 11: Penerimaan Maba (Mandiri) -->
+            <!-- ================================================================== -->
+            <article class="pos-document" id="pos-11">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>PENERIMAAN MAHASISWA BARU JALUR MANDIRI</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr. Muhammad Abdy, M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>UU No. 12 Tahun 2012</li>
+                            <li>PP No. 4 Tahun 2014</li>
+                            <li>Perpres No. 36 Tahun 2013</li>
+                            <li>Permendikbudristek No. 9 Tahun 2024</li>
+                            <li>Permenristekdikti No. 80 Tahun 2017</li>
+                            <li>Permendikbud No. 6 Tahun 2020</li>
+                            <li>Peraturan Akademik Unsulbar</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Staf Akademik dan kemahasiswaan</li>
+                            <li>Calon Mahasiswa Baru</li>
+                            <li>Panitia pusat Unsulbar</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS PMB Jalur SNBP</li>
+                            <li>POS PMB Jalur SNBT</li>
+                            <li>POS Registrasi Mahasiswa Baru</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Sistem PMB Unsulbar</li>
+                            <li>Bukti Pembayaran Pendaftaran</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Gagal verifikasi pembayaran menghambat pengisian data.</li>
+                            <li>Ketidaklengkapan data menghambat penyeleksian.</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>Hasil verifikasi pembayaran</li>
+                            <li>Kartu peserta</li>
+                            <li>Daftar Kelulusan</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>POS PENERIMAAN MAHASISWA BARU JALUR MANDIRI</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="3">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Calon Maba</th>
+                                <th>Staf Akademik</th>
+                                <th>Panitia Unsulbar</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Calon mahasiswa baru membuat akun</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Akun PMB</td>
+                                <td>5 menit</td>
+                                <td>Akun aktif</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Melakukan pembayaran biaya pendaftaran</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Bukti Bayar</td>
+                                <td>10 menit</td>
+                                <td>Pembayaran terkirim</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Verifikasi pembayaran oleh staf akademik</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Bukti Bayar</td>
+                                <td>10 Menit</td>
+                                <td>Hasil verifikasi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Jika tidak disetujui, kembali ke proses pembayaran</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Keputusan: Tidak</td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Jika disetujui, Melengkapi data dan memilih program studi</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Akun PMB</td>
+                                <td>10 menit</td>
+                                <td>Data terisi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Mencetak kartu peserta</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Akun PMB</td>
+                                <td>5 Menit</td>
+                                <td>Kartu Peserta</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>7.</td>
+                                <td>Penyeleksian oleh panitia pusat Unsulbar</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Data Pendaftar</td>
+                                <td>90 Menit</td>
+                                <td>Hasil Seleksi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>8.</td>
+                                <td>Pengumuman kelulusan</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Hasil Seleksi</td>
+                                <td>7 hari</td>
+                                <td>Pengumuman Kelulusan</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <!-- ================================================================== -->
+            <!-- POS 12: Registrasi Mahasiswa Baru -->
+            <!-- ================================================================== -->
+            <article class="pos-document" id="pos-12">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>REGISTRASI MAHASISWA BARU</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr. Muhammad Abdy, M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>(Daftar Dasar Hukum sama seperti PBO SNBT)</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Staf Akademik dan kemahasiswaan</li>
+                            <li>Calon Mahasiswa Baru</li>
+                            <li>Tim verifikasi UKT</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS PMB Jalur SNBP</li>
+                            <li>POS PMB Jalur SNBT</li>
+                            <li>POS PMB Jalur Mandiri</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Web pmb.unsulbar.ac.id</li>
+                            <li>Sistem perbankan / Mobile Banking</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Calon maba yang lulus tidak akan mendapatkan NIM.</li>
+                            <li>Kegagalan verifikasi data/UKT menghambat penerbitan NIM.</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>Dokumen data diri, keluarga, penghasilan, foto rumah, surat sehat, dll.</li>
+                            <li>Bukti tagihan/pembayaran UKT</li>
+                            <li>NIM (Nomor Induk Mahasiswa)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>POS REGISTRASI MAHASISWA BARU</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="3">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Calon Maba</th>
+                                <th>Staf (Verifikator)</th>
+                                <th>Tim Verifikasi UKT</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Calon mahasiswa baru login di web pmb.unsulbar.ac.id</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Akun PMB</td>
+                                <td>30 Detik</td>
+                                <td>Login berhasil</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Mengisi data dan melampirkan dokumen yang diminta</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Dokumen Maba</td>
+                                <td>10 menit</td>
+                                <td>Data terkirim</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Data diverifikasi oleh tim verifikator (Staf BAK)</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Data Maba</td>
+                                <td>10 Menit</td>
+                                <td>Hasil verifikasi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Jika tidak disetujui, kembali ke proses pengisian data</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Keputusan: Tidak</td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Jika disetujui, tim verifikasi UKT menentukan nominal UKT</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Data Maba</td>
+                                <td>10 menit</td>
+                                <td>Nominal UKT</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Calon mahasiswa baru melakukan pembayaran UKT</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Nominal UKT</td>
+                                <td>10 menit</td>
+                                <td>Bukti Bayar UKT</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>7.</td>
+                                <td>Pembayaran diverifikasi oleh tim verifikator</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Bukti Bayar UKT</td>
+                                <td>10 Menit</td>
+                                <td>Hasil verifikasi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>8.</td>
+                                <td>Jika tidak disetujui, kembali ke proses pembayaran</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Keputusan: Tidak</td>
+                            </tr>
+                            <tr>
+                                <td>9.</td>
+                                <td>Jika pembayaran disetujui, NIM akan terbit</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Verifikasi bayar</td>
+                                <td>5 menit</td>
+                                <td>NIM</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <!-- ================================================================== -->
+            <!-- POS 13: Monev Kegiatan Kemahasiswaan -->
+            <!-- ================================================================== -->
+            <article class="pos-document" id="pos-13">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>MONITORING DAN EVALUASI KEGIATAN KEMAHASISWAAN</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr. Muhammad Abdy, M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>(Daftar Dasar Hukum sama seperti PBO SNBT)</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Kepala Biro Akademik dan Kemahasiwaan</li>
+                            <li>Tim Monev</li>
+                            <li>Staf pengelola minat bakat dan penalaran (MBP)</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS Seleksi Proposal Kegiatan Ekstrakurikuler</li>
+                            <li>POS Seleksi Proposal (PKM, PPK, P2MW)</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Daftar kegiatan kemahasiswaan</li>
+                            <li>SK Tim monev</li>
+                            <li>Jadwal dan instrumen monev</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Pelaksanaan kegiatan kemahasiswaan tidak terukur.</li>
+                            <li>Tidak ada data evaluasi untuk perbaikan program.</li>
+                            <li>Penggunaan anggaran berpotensi tidak tepat sasaran.</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>Hasil monev</li>
+                            <li>Laporan monev</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>POS MONITORING DAN EVALUASI KEGIATAN KEMAHASISWAAN</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="3">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Staf MBP</th>
+                                <th>Ka. Biro AK</th>
+                                <th>Tim Monev</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Staf MBP mengidentifikasi kegiatan kemahasiswaan (1 periode)</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Daftar Kegiatan</td>
+                                <td>1 Jam</td>
+                                <td>Keg. teridentifikasi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Ka. Biro AK menetapkan tim monev kegiatan kemahasiswaan</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Daftar Kegiatan</td>
+                                <td>1 hari</td>
+                                <td>SK Tim monev</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Tim monev menyusun instrumen monev dan jadwal</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>SK Tim monev</td>
+                                <td>1 hari</td>
+                                <td>Instrumen & Jadwal</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Tim monev sosialisasi jadwal ke penanggung jawab kegiatan</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Jadwal Monev</td>
+                                <td>1 hari</td>
+                                <td>Jadwal tersosialisasi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Tim monev melaksanakan monitoring dan evaluasi</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Instrumen Monev</td>
+                                <td>1 hari</td>
+                                <td>Hasil monev</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Tim monev membuat laporan monev dan menyerahkan ke Ka. Biro AK</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Hasil monev</td>
+                                <td>5 hari</td>
+                                <td>Laporan monev (draf)</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>7.</td>
+                                <td>Staf MBP memeriksa kelengkapan laporan monev</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Laporan monev (draf)</td>
+                                <td>1 hari</td>
+                                <td>Laporan terverifikasi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>8.</td>
+                                <td>Jika tidak disetujui, kembali ke pembuatan laporan (Tim Monev)</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Keputusan: Tidak</td>
+                            </tr>
+                            <tr>
+                                <td>9.</td>
+                                <td>Jika disetujui, laporan disahkan oleh Ka. Biro AK</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Laporan terverifikasi</td>
+                                <td>1 jam</td>
+                                <td>Laporan monev (sah)</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10.</td>
+                                <td>Staf MBP mengarsipkan laporan monev</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Laporan monev (sah)</td>
+                                <td>5 menit</td>
+                                <td>Arsip Laporan</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <!-- ================================================================== -->
+            <!-- POS 14: Seleksi Proposal Kegiatan Ekskul -->
+            <!-- ================================================================== -->
+            <article class="pos-document" id="pos-14">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>SELEKSI PROPOSAL KEGIATAN EKSTRAKURIKULER</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr. Muhammad Abdy, M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>(Daftar Dasar Hukum sama seperti PBO SNBT)</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Wakil Rektor 1 (Warek 1)</li>
+                            <li>Kepala Biro Akademik dan Kemahasiwaan (Ka. Biro AK)</li>
+                            <li>Staf pengelola minat bakat dan penalaran (Staf MBP)</li>
+                            <li>Mahasiswa</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS Monitoring dan Evaluasi Kegiatan Kemahasiswaan</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Proposal</li>
+                            <li>Lembar verifikasi</li>
+                            <li>Surat permohonan penandatangan proposal</li>
+                            <li>Surat Pengantar pengajuan dana</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Proses pengajuan proposal tidak memiliki alur jelas.</li>
+                            <li>Keterlambatan verifikasi menghambat pencairan dana.</li>
+                            <li>Kegiatan tidak selaras visi misi dapat lolos pendanaan.</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>Buku agenda</li>
+                            <li>Lembar monitoring</li>
+                            <li>LPJ (Laporan Pertanggungjawaban)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>POS SELEKSI PROPOSAL KEGIATAN EKSTRAKURIKULER</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="4">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Mhs</th>
+                                <th>Staf MBP</th>
+                                <th>Ka. Biro AK</th>
+                                <th>Warek 1</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Mhs mengajukan permohonan penandatanganan proposal</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Proposal, Surat</td>
+                                <td>15 menit</td>
+                                <td>Permohonan diajukan</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Staf MBP memeriksa kelengkapan berkas Proposal</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Proposal</td>
+                                <td>3 jam</td>
+                                <td>Berkas terverifikasi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Jika tidak lengkap, dikembalikan ke mahasiswa</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Berkas diperbaiki</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Jika lengkap, Ka. Biro verifikasi tujuan proposal</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Proposal (lengkap)</td>
+                                <td>1 hari</td>
+                                <td>Hasil Verifikasi Tujuan</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Jika belum sesuai, dikembalikan ke mahasiswa</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Proposal direvisi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Jika relevan, Mhs catat di buku agenda & serahkan ke Warek 1 (via staf)</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Proposal (ttd Kabiro)</td>
+                                <td>15 menit</td>
+                                <td>Proposal terkirim</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>7.</td>
+                                <td>Wakil Rektor 1 menandatangani proposal</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Proposal (ttd Kabiro)</td>
+                                <td>1 hari</td>
+                                <td>Proposal (ttd Warek 1)</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>8.</td>
+                                <td>Mahasiswa menerima proposal (ttd Warek 1) melalui staf</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Proposal (ttd Warek 1)</td>
+                                <td>1 hari</td>
+                                <td>Proposal diterima Mhs</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>9.</td>
+                                <td>Mhs mengajukan permohonan dana kegiatan ke Warek 1 (via staf)</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Proposal (sah), Surat</td>
+                                <td>3 hari</td>
+                                <td>Permohonan dana</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>10.</td>
+                                <td>Staf, Ka.Biro, dan Warek 1 menyetujui surat pengajuan dana</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td>Surat Pengajuan</td>
+                                <td>3 jam</td>
+                                <td>Pengajuan disetujui</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>11.</td>
+                                <td>Mahasiswa menerima dana dari bagian kemahasiswaan</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Pengajuan disetujui</td>
+                                <td>2 hari</td>
+                                <td>Dana diterima</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>12.</td>
+                                <td>Mahasiswa menjalankan kegiatan kemahasiswaan</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Proposal, Dana</td>
+                                <td>Sesuai jadwal</td>
+                                <td>Kegiatan terlaksana</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>13.</td>
+                                <td>Ka. Biro AK dan Warek 1 melakukan monitoring</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td>Lembar monitoring</td>
+                                <td>1 hari</td>
+                                <td>Hasil monitoring</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>14.</td>
+                                <td>Mahasiswa melaporkan hasil kegiatan (LPJ)</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>LPJ</td>
+                                <td>2 hari</td>
+                                <td>LPJ terkumpul</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <!-- ================================================================== -->
+            <!-- POS 15: Seleksi Proposal (PKM, PPK, P2MW) -->
+            <!-- ================================================================== -->
+            <article class="pos-document" id="pos-15">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>SELEKSI PROPOSAL (PKM, PPK ORMAWA, P2MW)</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr. Muhammad Abdy, M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>(Daftar Dasar Hukum sama seperti PBO SNBT)</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Wakil Rektor 1</li>
+                            <li>Kepala Biro Akademik dan Kemahasiwaan</li>
+                            <li>Tim reviewer</li>
+                            <li>Staf pengelola MBP</li>
+                            <li>Mahasiswa</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS Monitoring dan Evaluasi Kegiatan Kemahasiswaan</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Poster</li>
+                            <li>Form Pendaftaran Calon Peserta</li>
+                            <li>Form Penilaian Calon Peserta</li>
+                            <li>Panduan kegiatan (PKM, PPK, P2MW)</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Partisipasi mahasiswa Unsulbar di program nasional rendah.</li>
+                            <li>Gagal seleksi internal, proposal yang dikirim tidak berkualitas.</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>Berita acara seleksi administratif</li>
+                            <li>Daftar peserta hasil seleksi</li>
+                            <li>Proposal</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>SELEKSI PROPOSAL KEGIATAN PENGEMBANGAN MINAT, BAKAT, DAN PENALARAN</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="4">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Staf MBP</th>
+                                <th>Warek 1</th>
+                                <th>Tim Reviewer</th>
+                                <th>Mhs</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Staf MBP melakukan sosialisasi kegiatan (PKM, PPK, P2MW)</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Poster, Panduan</td>
+                                <td>5 hari</td>
+                                <td>Sosialisasi terlaksana</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Staf MBP menerima berkas pendaftaran peserta</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Form Pendaftaran</td>
+                                <td>12 hari</td>
+                                <td>Berkas terkumpul</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Wakil Rektor 1 menetapkan tim pelakasana/reviewer</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Daftar Dosen/Ahli</td>
+                                <td>1 hari</td>
+                                <td>SK Tim Reviewer</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Tim reviewer memeriksa berkas pendaftaran (seleksi adm)</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Berkas Pendaftaran</td>
+                                <td>5 hari</td>
+                                <td>BA seleksi adm</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Tim reviewer menyeleksi proposal (seleksi substansi)</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Proposal, Form Nilai</td>
+                                <td>12 hari</td>
+                                <td>Daftar lulus internal</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Staf MBP mendaftarkan/mengirimkan proposal (lulus) ke sistem nasional</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Daftar Lulus Seleksi</td>
+                                <td>5 hari</td>
+                                <td>Proposal terkirim</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <!-- ================================================================== -->
+            <!-- POS 16: Penentuan Penerima Beasiswa -->
+            <!-- ================================================================== -->
+            <article class="pos-document" id="pos-16">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>PENENTUAN MAHASISWA PENERIMA BEASISWA</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr.Muhammad Abdy, S.Si., M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>UU No. 20 Tahun 2003</li>
+                            <li>UU No. 12 tahun 2012</li>
+                            <li>Persesjen No. 13 Tahun 2023</li>
+                            <li>SK Rektor No. 0194/UN55/HK.03/2024</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Pimpinan</li>
+                            <li>Fakultas</li>
+                            <li>Pengelola Beasiswa</li>
+                            <li>Mahasiswa</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS Pencairan Beasiswa Mahasiswa</li>
+                            <li>POS Penerbitan Kartu Hasil Studi</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Informasi Beasiswa</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Seleksi tidak transparan dan tidak tepat sasaran.</li>
+                            <li>Keterlambatan evaluasi menghambat alokasi.</li>
+                            <li>Keterlambatan SK Rektor menunda pencairan.</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>Data/ Berkas mahasiswa</li>
+                            <li>Surat keputusan Rektor</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>Tabel 1: Aktivitas Penentuan Penerima Beasiswa</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="4">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Pengelola</th>
+                                <th>Fakultas</th>
+                                <th>Mhs</th>
+                                <th>Pimpinan</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Pengelola menerima informasi penerimaan beasiswa</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Info Beasiswa</td>
+                                <td></td>
+                                <td>Info diterima</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Pengelola menginformasikan ke mhs dan fakultas</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Info Beasiswa</td>
+                                <td></td>
+                                <td>Info tersosialisasi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Mahasiswa melengkapi data dan berkas</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Data/Berkas Mhs</td>
+                                <td></td>
+                                <td>Berkas lengkap</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Pengelola/fakultas mengumpulkan & mengelola data/berkas</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Data/Berkas Mhs</td>
+                                <td></td>
+                                <td>Data terkelola</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Pengelola menetapkan nama penerima yang layak</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Data terkelola</td>
+                                <td></td>
+                                <td>Daftar nama layak</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Nama yang memenuhi syarat diajukan ke Pimpinan (SK Rektor)</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Daftar nama layak</td>
+                                <td></td>
+                                <td>SK Rektor</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4>Tabel 2: Aktivitas Pencabutan dan Penggantian Beasiswa</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="4">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Pengelola</th>
+                                <th>Fakultas</th>
+                                <th>Mhs</th>
+                                <th>Pimpinan</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Pengelola mengevaluasi penerima beasiswa</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>Data IPK, Kriteria</td>
+                                <td></td>
+                                <td>Hasil Evaluasi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Mhs (tidak memenuhi syarat) diajukan ke Fakultas utk diganti</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Hasil Evaluasi</td>
+                                <td></td>
+                                <td>Daftar Mhs (dicabut)</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Fakultas mengajukan nama mahasiswa pengganti</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Kriteria</td>
+                                <td></td>
+                                <td>Calon Pengganti</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Mahasiswa yang akan mengganti melengkapi berkas</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Data/Berkas Mhs</td>
+                                <td></td>
+                                <td>Berkas lengkap</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Pengelola menerima data dan menetapkan nama pengganti</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Berkas lengkap</td>
+                                <td></td>
+                                <td>Nama Pengganti (final)</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Nama pengganti diajukan ke Pimpinan (SK Rektor)</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Nama Pengganti (final)</td>
+                                <td></td>
+                                <td>SK Rektor</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <!-- ================================================================== -->
+            <!-- POS 17: Pencairan Beasiswa Mahasiswa -->
+            <!-- ================================================================== -->
+            <article class="pos-document" id="pos-17">
+                <div class="pos-header">
+                    <h3>PROSEDUR OPERASIONAL STANDAR (POS)</h3>
+                    <h2>PENCAIRAN BEASISWA MAHASISWA</h2>
+                </div>
+                
+                <div class="pos-approval">
+                    <strong>Disahkan Oleh:</strong> REKTOR <br>
+                    <strong>Nama:</strong> Prof. Dr.Muhammad Abdy, S.Si., M.Si
+                </div>
+
+                <div class="pos-metadata">
+                    <div class="meta-item">
+                        <h4>Dasar Hukum</h4>
+                        <ul>
+                            <li>UU No. 20 Tahun 2003</li>
+                            <li>UU No. 12 tahun 2012</li>
+                            <li>Persesjen No. 13 Tahun 2023</li>
+                            <li>SK Rektor No. 0194/UN55/HK.03/2024</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Kualifikasi Pelaksana</h4>
+                        <ul>
+                            <li>Pimpinan</li>
+                            <li>Fakultas</li>
+                            <li>Pengelola Beasiswa</li>
+                            <li>Bagian Keuangan</li>
+                            <li>Mahasiswa</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Keterkaitan</h4>
+                        <ul>
+                            <li>POS Penentuan Mahasiswa Penerima Beasiswa</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peralatan Perlengkapan</h4>
+                        <ul>
+                            <li>Informasi Hasil Seleksi Beasiswa</li>
+                            <li>Rekening Bank Mahasiswa</li>
+                            <li>Data pendukung pencairan</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Peringatan</h4>
+                        <ul>
+                            <li>Dana beasiswa tidak tersalurkan ke mahasiswa.</li>
+                            <li>Kesalahan rekap rekening dapat menyebabkan gagal transfer.</li>
+                            <li>Keterlambatan pengajuan ke Bag. Keuangan menunda penerimaan.</li>
+                        </ul>
+                    </div>
+                    <div class="meta-item">
+                        <h4>Pencatatan dan Pendataan</h4>
+                        <ul>
+                            <li>Data/ Berkas mahasiswa</li>
+                            <li>Rekap Rekening</li>
+                            <li>Laporan Pencairan</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pos-procedure">
+                    <h4>POS PENCAIRAN BEASISWA MAHASISWA</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th rowspan="2">No.</th>
+                                <th rowspan="2">Kegiatan</th>
+                                <th colspan="3">Pelaksana</th>
+                                <th colspan="3">Mutu Baku</th>
+                                <th rowspan="2">Ket.</th>
+                            </tr>
+                            <tr>
+                                <th>Pengelola</th>
+                                <th>Mhs</th>
+                                <th>Bag. Keuangan</th>
+                                <th>Kelengkapan</th>
+                                <th>Waktu</th>
+                                <th>Output</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1.</td>
+                                <td>Pengelola menginformasikan hasil seleksi (penetapan)</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>SK Rektor / Info</td>
+                                <td></td>
+                                <td>Info diterima Mhs</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2.</td>
+                                <td>Mahasiswa (penerima) membuat rekening Bank penyalur</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Bank Penyalur</td>
+                                <td></td>
+                                <td>Rekening Pribadi</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>3.</td>
+                                <td>Pengelola mengumpulkan dan merekap semua rekening</td>
+                                <td>Ya</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Rekening Mhs</td>
+                                <td></td>
+                                <td>Rekap Rekening</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>4.</td>
+                                <td>Rekening dan data pendukung diajukan ke Bag. Keuangan</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Rekap Rekening</td>
+                                <td></td>
+                                <td>Ajuan Pencairan</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>5.</td>
+                                <td>Bagian Keuangan mencairkan dana beasiswa ke Mahasiswa</td>
+                                <td></td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Ajuan Pencairan</td>
+                                <td></td>
+                                <td>Dana cair ke Mhs</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>6.</td>
+                                <td>Pengelola dan Bag. Keuangan membuat laporan penyaluran</td>
+                                <td>Ya</td>
+                                <td></td>
+                                <td>Ya</td>
+                                <td>Bukti transfer</td>
+                                <td></td>
+                                <td>Laporan Pencairan</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+        </main>
+    </div>
+
+    <!-- EMBEDDED JAVASCRIPT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.sidebar a');
+            const posDocuments = document.querySelectorAll('.pos-document');
+            const menuToggle = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('pos-nav');
+
+            // Fungsi untuk mengganti POS
+            function switchPos(targetId) {
+                // Sembunyikan semua dokumen
+                posDocuments.forEach(function(doc) {
+                    doc.classList.remove('active');
+                });
+
+                // Hapus 'active' dari semua link
+                navLinks.forEach(function(nav) {
+                    nav.classList.remove('active');
+                });
+
+                // Tampilkan target yang diklik
+                const targetDocument = document.getElementById(targetId);
+                if (targetDocument) {
+                    targetDocument.classList.add('active');
+                }
+
+                // Aktifkan link yang diklik
+                const activeLink = document.querySelector(`.sidebar a[data-target="${targetId}"]`);
+                if (activeLink) {
+                    activeLink.classList.add('active');
+                }
+                
+                // Tutup sidebar di mobile setelah klik
+                if (window.innerWidth <= 768) {
+                    document.body.classList.remove('sidebar-open');
+                }
+            }
+
+            // Event listener untuk semua link navigasi
+            navLinks.forEach(function(link) {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const targetId = link.getAttribute('data-target');
+                    switchPos(targetId);
+                });
+            });
+
+            // Event listener untuk tombol menu mobile
+            menuToggle.addEventListener('click', function() {
+                document.body.classList.toggle('sidebar-open');
+            });
+            
+            // Event listener untuk menutup sidebar jika klik di luar area sidebar (di mobile)
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth <= 768 && document.body.classList.contains('sidebar-open')) {
+                    if (!sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+                        document.body.classList.remove('sidebar-open');
+                    }
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
